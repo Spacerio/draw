@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+const NUM: i32 = 8;
+
 fn window_config() -> Conf {
     Conf {
         window_title: "Chess".to_string(),
@@ -24,6 +26,9 @@ async fn main() {
         }
         if is_key_pressed(KeyCode::P) {
             n -= 1;
+        }
+        if is_key_pressed(KeyCode::S) {
+            n += 10;
         }
 
         // draw_piece([1, 1, 2, 3]);
@@ -61,14 +66,13 @@ fn draw_piece(l: [i32;4]) {
 
 fn create_list() -> Vec<[i32;4]> {
     let mut l: Vec<[i32;4]> = Vec::new();
-    let n = 8;
-    for wx in 1..=n {
-        for wy in 1..=n {
-            for bx in 1..=n {
-                for by in 1..=n {
+    for wx in 1..=NUM {
+        for wy in 1..=NUM {
+            for bx in 1..=NUM {
+                for by in 1..=NUM {
                     if wx != bx && wy != by {
-                        if (bx as i32 - by as i32).abs() != (wy as i32 - wx as i32).abs() {
-                            if (bx as i32 + by as i32).abs() != (wy as i32 + wy as i32).abs() {
+                        if (bx - by).abs() != (wy - wx).abs() {
+                            if (bx + by) != (wx + wy) {
                                 l.push([wx, wy, bx, by]);
                                 println!("{}", l.len());
                             }
