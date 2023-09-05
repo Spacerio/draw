@@ -1,6 +1,4 @@
-use macroquad::prelude::*;
-
-// const n: i32 = 3;
+use macroquad::{prelude::*, ui::{widgets, root_ui}, hash};
 
 fn window_config() -> Conf {
     Conf {
@@ -13,26 +11,52 @@ fn window_config() -> Conf {
 
 #[macroquad::main(window_config)]
 async fn main() {
-    let n = 8;
-    let list = create_list(n);
+    let mut n = 8;
     let mut pos = 0;
-    let setup = false;
+    let mut setup = true;
+    let mut data = String::new();
     loop {
         clear_background(BEIGE);
         match get_last_key_pressed() {
             Some(KeyCode::P) => pos -= 1,
             Some(KeyCode::Space) => pos += 1,
             Some(KeyCode::S) => pos += 10,
+            Some(KeyCode::Up) => n += 1,
+            Some(KeyCode::Down) => n -= 1,
             Some(KeyCode::Q) => break,
             _ => ()
         }
+
+        if n >= 3 && is_key_pressed(KeyCode::Enter) {
+            setup = !setup
+        }
         if setup {
+            widgets::Window::new(hash!(), vec2(470., 50.), vec2(300., 60.))
+                .label("Input n")
+                .ui(&mut *root_ui(), |ui| {
+                    ui.input_text(hash!(), "Input n", &mut data);
+                    ui.label(None, &n.to_string());
+                });
+            if let Ok(s) = data.parse() {
+                n = s;
+            }
         } else {
+            let list = create_list(n);
             draw_board(n);
             draw_piece(n, list.get(pos).unwrap().to_owned());
         }
         next_frame().await
     }
+}
+
+fn take_input() -> i32 {
+    let mut data = String::new();
+    widgets::Window::new(hash!(), vec2(470., 50.), vec2(300., 300.))
+        .label("Input n")
+        .ui(&mut *root_ui(), |ui| {
+            ui.input_text(hash!(), "Input n", &mut data)
+        });
+    data.parse().unwrap_or_default()
 }
 
 
