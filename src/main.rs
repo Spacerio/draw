@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-const NUM: i32 = 8;
+const NUM: i32 = 3;
 
 fn window_config() -> Conf {
     Conf {
@@ -39,10 +39,10 @@ async fn main() {
 }
 
 fn draw_board() {
-    let w = screen_width() / 8.0;
-    let h = screen_height() / 8.0;
-    for i in 0..8 {
-        for j in 0..8 {
+    let w = screen_width() / NUM as f32;
+    let h = screen_height() / NUM as f32;
+    for i in 0..NUM {
+        for j in 0..NUM {
             let x = i as f32 * w;
             let y = j as f32 * h;
             match (i % 2, j % 2) {
@@ -53,16 +53,28 @@ fn draw_board() {
     }
 }
 
+// fn draw_piece(l: [i32;4]) {
+//     let r = screen_width() / (NUM) as f32;
+//     let x = l[0] as f32 * (screen_width() / NUM as f32) - r * 2.0;
+//     let y = l[1] as f32 * (screen_height() / NUM as f32) - r * 2.0;
+//     draw_circle(x, y, r, WHITE);
+//     let x = l[2] as f32 * (screen_width() / NUM as f32) - r * 2.0;
+//     let y = l[3] as f32 * (screen_height() / NUM as f32) - r * 2.0;
+//     draw_circle(x, y, r, BLACK);
+//     println!("{:?}", l);
+// }
+
 fn draw_piece(l: [i32;4]) {
-    let r = 25.0;
-    let x = l[0] as f32 * (screen_width() / 8.0) - r * 2.0;
-    let y = l[1] as f32 * (screen_height() / 8.0) - r * 2.0;
+    let tile_size = screen_height() / NUM as f32;
+    let r = tile_size / 3.0;
+    let x = l[0] as f32 * tile_size - tile_size / 2.0;
+    let y = l[1] as f32 * tile_size - tile_size / 2.0;
     draw_circle(x, y, r, WHITE);
-    let x = l[2] as f32 * (screen_width() / 8.0) - r * 2.0;
-    let y = l[3] as f32 * (screen_height() / 8.0) - r * 2.0;
+    let x = l[2] as f32 * tile_size - tile_size / 2.0;
+    let y = l[3] as f32 * tile_size - tile_size / 2.0;
     draw_circle(x, y, r, BLACK);
-    println!("{:?}", l);
 }
+
 
 fn create_list() -> Vec<[i32;4]> {
     let mut l: Vec<[i32;4]> = Vec::new();
@@ -74,7 +86,7 @@ fn create_list() -> Vec<[i32;4]> {
                         if (bx - by).abs() != (wy - wx).abs() {
                             if (bx + by) != (wx + wy) {
                                 l.push([wx, wy, bx, by]);
-                                println!("{}", l.len());
+                                // println!("{}", l.len());
                             }
                         }
                     }
