@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-const NUM: i32 = 3;
+// const n: i32 = 3;
 
 fn window_config() -> Conf {
     Conf {
@@ -13,36 +13,34 @@ fn window_config() -> Conf {
 
 #[macroquad::main(window_config)]
 async fn main() {
-    let list = create_list();
-    let mut n = 0;
+    let n = 8;
+    let list = create_list(n);
+    let mut pos = 0;
+    let setup = false;
     loop {
         clear_background(BEIGE);
-        if is_key_down(KeyCode::Q) {
-            break;
+        match get_last_key_pressed() {
+            Some(KeyCode::P) => pos -= 1,
+            Some(KeyCode::Space) => pos += 1,
+            Some(KeyCode::S) => pos += 10,
+            Some(KeyCode::Q) => break,
+            _ => ()
         }
-        draw_board();
-        if is_key_pressed(KeyCode::Space) {
-            n += 1;
+        if setup {
+        } else {
+            draw_board(n);
+            draw_piece(n, list.get(pos).unwrap().to_owned());
         }
-        if is_key_pressed(KeyCode::P) {
-            n -= 1;
-        }
-        if is_key_pressed(KeyCode::S) {
-            n += 10;
-        }
-
-        // draw_piece([1, 1, 2, 3]);
-        draw_piece(list.get(n).unwrap().to_owned());
-
         next_frame().await
     }
 }
 
-fn draw_board() {
-    let w = screen_width() / NUM as f32;
-    let h = screen_height() / NUM as f32;
-    for i in 0..NUM {
-        for j in 0..NUM {
+
+fn draw_board(n: i32) {
+    let w = screen_width() / n as f32;
+    let h = screen_height() / n as f32;
+    for i in 0..n {
+        for j in 0..n {
             let x = i as f32 * w;
             let y = j as f32 * h;
             match (i % 2, j % 2) {
@@ -53,19 +51,8 @@ fn draw_board() {
     }
 }
 
-// fn draw_piece(l: [i32;4]) {
-//     let r = screen_width() / (NUM) as f32;
-//     let x = l[0] as f32 * (screen_width() / NUM as f32) - r * 2.0;
-//     let y = l[1] as f32 * (screen_height() / NUM as f32) - r * 2.0;
-//     draw_circle(x, y, r, WHITE);
-//     let x = l[2] as f32 * (screen_width() / NUM as f32) - r * 2.0;
-//     let y = l[3] as f32 * (screen_height() / NUM as f32) - r * 2.0;
-//     draw_circle(x, y, r, BLACK);
-//     println!("{:?}", l);
-// }
-
-fn draw_piece(l: [i32;4]) {
-    let tile_size = screen_height() / NUM as f32;
+fn draw_piece(n: i32, l: [i32;4]) {
+    let tile_size = screen_height() / n as f32;
     let r = tile_size / 3.0;
     let x = l[0] as f32 * tile_size - tile_size / 2.0;
     let y = l[1] as f32 * tile_size - tile_size / 2.0;
@@ -75,13 +62,12 @@ fn draw_piece(l: [i32;4]) {
     draw_circle(x, y, r, BLACK);
 }
 
-
-fn create_list() -> Vec<[i32;4]> {
+fn create_list(n: i32) -> Vec<[i32;4]> {
     let mut l: Vec<[i32;4]> = Vec::new();
-    for wx in 1..=NUM {
-        for wy in 1..=NUM {
-            for bx in 1..=NUM {
-                for by in 1..=NUM {
+    for wx in 1..=n {
+        for wy in 1..=n {
+            for bx in 1..=n {
+                for by in 1..=n {
                     if wx != bx && wy != by {
                         if (bx - by).abs() != (wy - wx).abs() {
                             if (bx + by) != (wx + wy) {
